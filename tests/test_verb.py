@@ -1,37 +1,24 @@
-import unittest
+from sqlalchemy.exc import IntegrityError
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
-from db_interface.verb import Verb, Base
-
-test_engine = create_engine('sqlite://')
-TestSession = sessionmaker(test_engine)
+from db_interface.verb import Verb
+from tests.model_test_base import ModelTestBase
 
 
-Base.metadata.create_all(test_engine)
-
-
-class TestVerb(unittest.TestCase):
-    def setUp(self):
-        self.session = TestSession()
-        self.clear_tables()
-
-    def clear_tables(self):
-        for table in Base.metadata.sorted_tables:
-            self.session.execute(table.delete())
-
-    def tearDown(self):
-        self.session.rollback()
-        self.session.close()
+class TestVerb(ModelTestBase):
+    can_use_sqlite = True
 
     def test_create_verb_no_irregular_past(self):
-        verb = Verb(value='play')
+        verb = Verb(value='play', irregular_past='')
         self.assertEqual(verb.value, 'play')
-        self.assertEqual(verb.irregular_past, None)
+        self.assertEqual(verb.irregular_past, '')
+
+    def test_create_verb_does_not_allow_null_irregular_past(self):
+        verb = Verb(value='play')
+        self.session.add(verb)
+        self.assertRaises(IntegrityError, self.session.commit)
 
     def test_create_verb_no_irregular_past_commit(self):
-        verb = Verb(value='play')
+        verb = Verb(value='play', irregular_past='')
         self.session.add(verb)
         self.session.commit()
         answer = self.session.query(Verb).all()[0]
@@ -51,12 +38,23 @@ class TestVerb(unittest.TestCase):
         self.assertEqual(answer, verb)
         self.assertIsInstance(verb.id, int)
 
-    def test_create_verb_unique_over_two_keys(self):
-        first = Verb(value='play')
-        second = Verb(value='play')
+    def test_create_verb_does_not_raise_error_when_past_tense_not_the_same(self):
+        first = Verb(value='hang', irregular_past='hung')
+        second = Verb(value='hang', irregular_past='hanged')
         self.session.add(first)
         self.session.add(second)
-        self.session.commit()
-        for word in self.session.query(Verb).all():
-            print(word.value, word.irregular_past)
-        
+        self.assertIsNone(self.session.commit())
+
+    def test_create_verb_raises_error_over_non_unique_values(self):
+        first = Verb(value='go', irregular_past='went')
+        second = Verb(value='go', irregular_past='went')
+        self.session.add(first)
+        self.session.add(second)
+        self.assertRaises(IntegrityError, self.session.commit)
+
+    def test_create_verb_raises_error_over_non_unique_values_when_irregular_past_is_empty_str(self):
+        first = Verb(value='go', irregular_past='')
+        second = Verb(value='go', irregular_past='')
+        self.session.add(first)
+        self.session.add(second)
+        self.assertRaises(IntegrityError, self.session.commit)

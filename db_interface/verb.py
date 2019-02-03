@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, UniqueConstraint
+from sqlalchemy import Column, Integer, String, UniqueConstraint, CheckConstraint, Index
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -10,6 +10,6 @@ class Verb(Base):
     id = Column(Integer, primary_key=True)
 
     value = Column(String(30), nullable=False)
-    irregular_past = Column(String(30), nullable=True)
-    UniqueConstraint(value, irregular_past, name='a_name')
+    irregular_past = Column(String(30), nullable=False)
+    UniqueConstraint(value, irregular_past)
 
