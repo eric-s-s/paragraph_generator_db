@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, String, UniqueConstraint, CheckConstraint, Index
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, UniqueConstraint
 
-Base = declarative_base()
+from db_interface.models.base import Base
 
 
 class Verb(Base):
@@ -12,4 +11,3 @@ class Verb(Base):
     value = Column(String(30), nullable=False)
     irregular_past = Column(String(30), nullable=False)
     UniqueConstraint(value, irregular_past)
-

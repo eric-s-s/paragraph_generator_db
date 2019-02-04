@@ -3,7 +3,7 @@ import unittest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from db_interface.verb import Base
+from db_interface.models.base import Base
 
 TEST_DATA_BASE = 'postgresql+psycopg2://postgres:pw@172.17.0.2/paragraph_generator_test'
 SQLITE_DATA_BASE = 'sqlite://'

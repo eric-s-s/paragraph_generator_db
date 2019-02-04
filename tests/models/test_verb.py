@@ -1,7 +1,7 @@
 from sqlalchemy.exc import IntegrityError
 
-from db_interface.verb import Verb
-from tests.model_test_base import ModelTestBase
+from db_interface.models.verb import Verb
+from tests.models.model_test_base import ModelTestBase
 
 
 class TestVerb(ModelTestBase):

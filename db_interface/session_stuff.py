@@ -3,7 +3,7 @@ from contextlib import contextmanager
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from db_interface.verb import Verb, Base
+from db_interface.models.verb import Verb, Base
 
 """
 NOTE: DataBaseSession requires binding to an engine using DataBaseSession.configure(bind=some_engine)
