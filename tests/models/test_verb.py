@@ -12,18 +12,18 @@ class TestVerb(ModelTestBase):
         self.assertEqual(verb.value, 'play')
         self.assertEqual(verb.irregular_past, '')
 
-    def test_create_verb_does_not_allow_null_irregular_past(self):
+    def test_create_verb_irregular_past_defaults_to_empty_str(self):
         verb = Verb(value='play')
-        self.session.add(verb)
-        self.assertRaises(IntegrityError, self.session.commit)
+        self.assertEqual(verb.irregular_past, '')
 
     def test_create_verb_no_irregular_past_commit(self):
-        verb = Verb(value='play', irregular_past='')
+        verb = Verb(value='play')
         self.session.add(verb)
         self.session.commit()
         answer = self.session.query(Verb).all()[0]
         self.assertEqual(verb, answer)
         self.assertIsInstance(verb.id, int)
+        self.assertEqual(verb.irregular_past, '')
 
     def test_create_verb_irregular_past(self):
         verb = Verb(value='go', irregular_past='went')
@@ -58,3 +58,9 @@ class TestVerb(ModelTestBase):
         self.session.add(first)
         self.session.add(second)
         self.assertRaises(IntegrityError, self.session.commit)
+
+    def test_all_fields_not_nullable(self):
+        class_ = Verb
+        keys = ('value', 'irregular_past')
+        values = ('a', 'b')
+        self.assert_not_nullable(class_, keys, values)

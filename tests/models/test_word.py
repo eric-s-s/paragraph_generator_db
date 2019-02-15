@@ -8,16 +8,17 @@ class TestWord(ModelTestBase):
     can_use_sqlite = True
 
     def test_Tag(self):
-        self.assertEqual(Tag.PREPOSITION.value, 'PREPOSITION')
-        self.assertEqual(Tag.PARTICLE.value, 'PARTICLE')
+        self.assertEqual(getattr(Tag, 'PREPOSITION'), Tag.PREPOSITION)
+        self.assertEqual(getattr(Tag, 'PARTICLE'), Tag.PARTICLE)
+        self.assertEqual(len(Tag.__members__), 2)
 
     def test_init(self):
-        word = Word(value='with', tag='PREPOSITION')
+        word = Word(value='with', tag=Tag.PREPOSITION)
         self.assertEqual(word.value, 'with')
-        self.assertEqual(word.tag, 'PREPOSITION')
+        self.assertEqual(word.tag, Tag.PREPOSITION)
 
     def test_commit(self):
-        word = Word(value='with', tag='PREPOSITION')
+        word = Word(value='with', tag=Tag.PREPOSITION)
         self.session.add(word)
         self.session.commit()
 
@@ -33,26 +34,32 @@ class TestWord(ModelTestBase):
         self.assertRaises(IntegrityError, self.session.commit)
 
     def test_enum_values(self):
-        for enum_name in ('PREPOSITION', 'PARTICLE'):
+        for enum_name in (Tag.PREPOSITION, Tag.PARTICLE):
             word = Word(value='a', tag=enum_name)
             self.session.add(word)
             self.session.commit()
             to_test = self.session.query(Word).filter(Word.tag == enum_name)[0]
-            self.assertEqual(to_test.tag, getattr(Tag, enum_name))
+            self.assertEqual(to_test.tag, enum_name)
 
     def test_unique_constraint_on_word_and_tag(self):
-        word = Word(value='x', tag='PREPOSITION')
-        different_by_tag = Word(value='x', tag='PARTICLE')
-        different_by_value = Word(value='y', tag='PREPOSITION')
+        word = Word(value='x', tag=Tag.PREPOSITION)
+        different_by_tag = Word(value='x', tag=Tag.PARTICLE)
+        different_by_value = Word(value='y', tag=Tag.PREPOSITION)
         self.session.add(word)
         self.session.add(different_by_tag)
         self.session.add(different_by_value)
         self.assertIsNone(self.session.commit())
 
     def test_unique_constraint_raises_integrity_error(self):
-        word = Word(value='x', tag='PREPOSITION')
-        same_word = Word(value='x', tag='PREPOSITION')
+        word = Word(value='x', tag=Tag.PREPOSITION)
+        same_word = Word(value='x', tag=Tag.PREPOSITION)
         self.session.add(word)
         self.session.add(same_word)
         self.assertRaises(IntegrityError, self.session.commit)
+
+    def test_value_and_tag_not_nullable(self):
+        class_ = Word
+        keys = ('value', 'tag')
+        values = ('x', Tag.PARTICLE)
+        self.assert_not_nullable(class_, keys, values)
 

@@ -6,8 +6,8 @@ from db_interface.models.base import Base
 
 
 class Tag(enum.Enum):
-    PREPOSITION = 'PREPOSITION'
-    PARTICLE = 'PARTICLE'
+    PREPOSITION = enum.auto()
+    PARTICLE = enum.auto()
 
 
 class Word(Base):

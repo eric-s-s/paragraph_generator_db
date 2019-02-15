@@ -11,3 +11,7 @@ class Verb(Base):
     value = Column(String(30), nullable=False)
     irregular_past = Column(String(30), nullable=False)
     UniqueConstraint(value, irregular_past)
+
+    def __init__(self, value, irregular_past=''):
+        self.value = value
+        self.irregular_past = irregular_past

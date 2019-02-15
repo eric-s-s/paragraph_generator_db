@@ -16,15 +16,19 @@ class TestCountableNoun(ModelTestBase):
         self.assertEqual(to_test.irregular_plural, 'children')
         self.assertIsInstance(to_test.id, int)
 
-    def test_countable_noun_not_nullable_value(self):
-        noun = CountableNoun(irregular_plural='x')
+    def test_countable_noun_default_irregular_plural_is_empty_string(self):
+        noun = CountableNoun(value='a')
+        self.assertEqual(noun.irregular_plural, '')
         self.session.add(noun)
-        self.assertRaises(IntegrityError, self.session.commit)
+        self.session.commit()
+        to_test = self.session.query(CountableNoun).all()[0]
+        self.assertEqual(noun, to_test)
 
-    def test_countable_noun_not_nullable_irregular_plural(self):
-        noun = CountableNoun(value='x')
-        self.session.add(noun)
-        self.assertRaises(IntegrityError, self.session.commit)
+    def test_countable_noun_not_nullable_value_and_irregular_plural(self):
+        class_ = CountableNoun
+        keys = ('value', 'irregular_plural')
+        values = ('a', 'b')
+        self.assert_not_nullable(class_, keys, values)
 
     def test_countable_noun_unique_value_constraint(self):
         noun = CountableNoun(value='x', irregular_plural='y')
@@ -73,14 +77,14 @@ class TestStaticNoun(ModelTestBase):
         self.session.add(noun)
         self.assertRaises(IntegrityError, self.session.commit)
 
-    def test_static_noun_not_nullable_is_plural(self):
-        noun = StaticNoun(value='Joe')
-        self.session.add(noun)
-        self.assertRaises(IntegrityError, self.session.commit)
+    def test_static_noun_not_nullable_value_is_plural(self):
+        class_ = StaticNoun
+        keys = ('value', 'is_plural')
+        values = ('a', True)
+        self.assert_not_nullable(class_, keys, values)
 
     def test_static_noun_unique_value_constraint(self):
         noun = StaticNoun(value='x', is_plural=True)
         same_value = StaticNoun(value='x', is_plural=False)
         self.session.add_all((noun, same_value))
         self.assertRaises(IntegrityError, self.session.commit)
-

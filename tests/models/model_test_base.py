@@ -1,6 +1,7 @@
 import unittest
 
 from sqlalchemy import create_engine
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
 
 from db_interface.models.base import Base
@@ -40,3 +41,12 @@ class ModelTestBase(unittest.TestCase):
     def tearDown(self):
         self.session.rollback()
         self.session.close()
+
+    def assert_not_nullable(self, class_, keys, values):
+        for key in keys:
+            kwargs = dict(zip(keys, values))
+            kwargs[key] = None
+            obj = class_(**kwargs)
+            self.session.add(obj)
+            self.assertRaises(IntegrityError, self.session.commit)
+            self.session.rollback()

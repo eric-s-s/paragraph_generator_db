@@ -10,6 +10,10 @@ class CountableNoun(Base):
     value = Column(String(30), nullable=False, unique=True)
     irregular_plural = Column(String(30), nullable=False)
 
+    def __init__(self, value, irregular_plural=''):
+        self.value = value
+        self.irregular_plural = irregular_plural
+
 
 class UncountableNoun(Base):
     __tablename__ = 'uncountable_noun'
