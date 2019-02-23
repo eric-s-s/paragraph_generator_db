@@ -15,20 +15,22 @@ class TestUserType(unittest.TestCase):
 
 class TestUser(DatabaseTestCase):
     def test_init(self):
-        user_name = 'random'
+        email = 'email@email.com'
+        password = 'password'
         score = 243758
         privileges = UserType.TEACHER
-        user = User(user_name=user_name, score=score, user_type=privileges)
-        self.assertEqual(user.user_name, user_name)
+        user = User(email=email, password=password, user_type=privileges, score=score)
+        self.assertEqual(user.email, email)
+        self.assertEqual(user.password, password)
         self.assertEqual(user.score, score)
-        self.assertEqual(user.privileges, privileges)
+        self.assertEqual(user.user_type, privileges)
 
     def test_init_score_defaults_to_zero(self):
-        user = User(user_name='joe', user_type=UserType.TEACHER)
+        user = User(email='email', password='pw', user_type=UserType.TEACHER)
         self.assertEqual(user.score, 0)
 
     def test_commit_all_fields(self):
-        user = User(user_name='joe', score=0, user_type=UserType.STUDENT)
+        user = User(email='email', password='pw', score=0, user_type=UserType.STUDENT)
         self.session.add(user)
         self.session.commit()
         answer = self.session.query(User).all()[0]
@@ -36,31 +38,32 @@ class TestUser(DatabaseTestCase):
         self.assertIsInstance(answer.id, int)
 
     def test_commit_with_default_score(self):
-        user = User(user_name='Ethel', user_type=UserType.STUDENT)
+        user = User(email='email', password='pw', user_type=UserType.STUDENT)
         self.session.add(user)
         self.session.commit()
         answer = self.session.query(User).all()[0]
         self.assertEqual(answer, user)
         self.assertEqual(answer.score, 0)
 
-    def test_user_name_unique_constraint(self):
-        user_name = 'a'
-        user = User(user_name=user_name, user_type=UserType.STUDENT)
-        same_user_name = User(user_name=user_name, user_type=UserType.TEACHER)
+    def test_email_unique_constraint(self):
+        email = 'email@email.com'
+        user = User(email=email, password='a', user_type=UserType.STUDENT, score=1)
+        same_user_name = User(email=email, password='b', user_type=UserType.TEACHER, score=2)
         self.session.add_all([user, same_user_name])
         self.assertRaises(IntegrityError, self.session.commit)
 
-    def test_score_and_user_type_not_unique(self):
+    def test_password_score_and_user_type_not_unique(self):
+        password = 'pw'
         score = 100
         privileges = UserType.TEACHER
-        first = User(user_name='a', score=score, user_type=privileges)
-        second = User(user_name='b', score=score, user_type=privileges)
+
+        first = User(email='a', password=password, score=score, user_type=privileges)
+        second = User(email='b', password=password, score=score, user_type=privileges)
         self.session.add_all([first, second])
         self.assertIsNone(self.session.commit())
 
     def test_all_fields_not_nullable(self):
         class_ = User
-        keys = ('user_name', 'score', 'user_type')
-        values = ('random', 398, UserType.TEACHER)
+        keys = ('email', 'password', 'score', 'user_type')
+        values = ('email', 'random', 398, UserType.TEACHER)
         self.assert_not_nullable(class_, keys, values)
-

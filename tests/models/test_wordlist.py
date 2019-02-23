@@ -36,7 +36,7 @@ class TestWordList(DatabaseTestCase):
         self.uncountable_nouns = [self.water, self.air]
         self.static_nouns = [self.joe, self.herbs]
 
-        self.test_user = User(user_name='a', user_type=UserType.TEACHER)
+        self.test_user = User(email='email', password='pw', user_type=UserType.TEACHER)
 
         self.session.add(self.test_user)
         self.session.commit()
@@ -85,7 +85,7 @@ class TestWordList(DatabaseTestCase):
         self.assertEqual(retrieved, [])
 
     def test_unique_constraint_on_user_id_and_name(self):
-        other_user = User('other_user', UserType.TEACHER)
+        other_user = User('other_user', 'pw', UserType.TEACHER)
         self.session.add(other_user)
         self.session.commit()
 

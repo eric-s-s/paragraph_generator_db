@@ -15,11 +15,13 @@ class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
 
-    user_name = Column(String(30), unique=True, nullable=False)
+    email = Column(String(50), nullable=False, unique=True)
+    password = Column(String(30), nullable=False)
     score = Column(Integer, nullable=False)
-    privileges = Column(SQLEnum(UserType), nullable=False)
+    user_type = Column(SQLEnum(UserType), nullable=False)
 
-    def __init__(self, user_name, user_type, score=0):
-        self.user_name = user_name
+    def __init__(self, email, password, user_type, score=0):
+        self.email = email
+        self.password = password
         self.score = score
-        self.privileges = user_type
+        self.user_type = user_type
