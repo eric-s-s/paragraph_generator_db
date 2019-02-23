@@ -13,13 +13,10 @@ SQLITE_DATA_BASE = 'sqlite://'
 class ModelTestBase(unittest.TestCase):
     base = None
     test_engine = None
-    can_use_sqlite = False
 
     @classmethod
     def setUpClass(cls):
         data_base_connection_str = TEST_DATA_BASE
-        if cls.can_use_sqlite:
-            data_base_connection_str = SQLITE_DATA_BASE
         cls.test_engine = create_engine(data_base_connection_str)
 
         cls.base = Base

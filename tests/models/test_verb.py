@@ -5,7 +5,6 @@ from tests.models.model_test_base import ModelTestBase
 
 
 class TestVerb(ModelTestBase):
-    can_use_sqlite = True
 
     def test_create_verb_no_irregular_past(self):
         verb = Verb(value='play', irregular_past='')

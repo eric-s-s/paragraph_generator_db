@@ -19,7 +19,7 @@ class User(Base):
     score = Column(Integer, nullable=False)
     privileges = Column(SQLEnum(UserType), nullable=False)
 
-    def __init__(self, user_name, privileges, score=0):
+    def __init__(self, user_name, user_type, score=0):
         self.user_name = user_name
         self.score = score
-        self.privileges = privileges
+        self.privileges = user_type

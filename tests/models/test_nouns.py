@@ -5,7 +5,6 @@ from tests.models.model_test_base import ModelTestBase
 
 
 class TestCountableNoun(ModelTestBase):
-    can_use_sqlite = True
 
     def test_countable_noun_irregular_plural(self):
         noun = CountableNoun(value='child', irregular_plural='children')
@@ -38,8 +37,6 @@ class TestCountableNoun(ModelTestBase):
 
 
 class TestUncountableNoun(ModelTestBase):
-    can_use_sqlite = True
-
     def test_uncountable_noun_definite(self):
         noun = UncountableNoun(value='water')
         self.session.add(noun)
@@ -61,8 +58,6 @@ class TestUncountableNoun(ModelTestBase):
 
 
 class TestStaticNoun(ModelTestBase):
-    can_use_sqlite = True
-
     def test_static_noun_definite(self):
         noun = StaticNoun(value='Joe', is_plural=False)
         self.session.add(noun)

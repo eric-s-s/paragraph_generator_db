@@ -1,12 +1,10 @@
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, DataError
 
 from db_interface.models.word import Word, Tag
 from tests.models.model_test_base import ModelTestBase
 
 
 class TestWord(ModelTestBase):
-    can_use_sqlite = True
-
     def test_Tag(self):
         self.assertEqual(getattr(Tag, 'PREPOSITION'), Tag.PREPOSITION)
         self.assertEqual(getattr(Tag, 'PARTICLE'), Tag.PARTICLE)
@@ -31,7 +29,7 @@ class TestWord(ModelTestBase):
     def test_commit_word_not_in_enum(self):
         word = Word(value='which', tag='oops')
         self.session.add(word)
-        self.assertRaises(IntegrityError, self.session.commit)
+        self.assertRaises(DataError, self.session.commit)
 
     def test_enum_values(self):
         for enum_name in (Tag.PREPOSITION, Tag.PARTICLE):
