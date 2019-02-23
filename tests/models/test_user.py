@@ -3,7 +3,7 @@ import unittest
 from sqlalchemy.exc import IntegrityError
 
 from db_interface.models.user import UserType, User
-from tests.models.model_test_base import ModelTestBase
+from tests.database_test_case import DatabaseTestCase
 
 
 class TestUserType(unittest.TestCase):
@@ -13,7 +13,7 @@ class TestUserType(unittest.TestCase):
         self.assertEqual(len(UserType.__members__), 2)
 
 
-class TestUser(ModelTestBase):
+class TestUser(DatabaseTestCase):
     def test_init(self):
         user_name = 'random'
         score = 243758

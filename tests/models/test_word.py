@@ -1,10 +1,10 @@
 from sqlalchemy.exc import IntegrityError, DataError
 
 from db_interface.models.word import Word, Tag
-from tests.models.model_test_base import ModelTestBase
+from tests.database_test_case import DatabaseTestCase
 
 
-class TestWord(ModelTestBase):
+class TestWord(DatabaseTestCase):
     def test_Tag(self):
         self.assertEqual(getattr(Tag, 'PREPOSITION'), Tag.PREPOSITION)
         self.assertEqual(getattr(Tag, 'PARTICLE'), Tag.PARTICLE)

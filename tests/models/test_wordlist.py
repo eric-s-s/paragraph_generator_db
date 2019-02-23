@@ -7,10 +7,10 @@ from db_interface.models.user import User, UserType
 from db_interface.models.verb import Verb
 from db_interface.models.word import Word, Tag
 from db_interface.models.word_list import WordList
-from tests.models.model_test_base import ModelTestBase
+from tests.database_test_case import DatabaseTestCase
 
 
-class TestWordList(ModelTestBase):
+class TestWordList(DatabaseTestCase):
 
     def setUp(self):
         # TODO delete all but user

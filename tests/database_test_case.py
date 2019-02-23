@@ -10,7 +10,7 @@ TEST_DATA_BASE = 'postgresql+psycopg2://postgres:pw@172.17.0.2/paragraph_generat
 SQLITE_DATA_BASE = 'sqlite://'
 
 
-class ModelTestBase(unittest.TestCase):
+class DatabaseTestCase(unittest.TestCase):
     base = None
     test_engine = None
 

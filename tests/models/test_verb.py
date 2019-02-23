@@ -1,10 +1,10 @@
 from sqlalchemy.exc import IntegrityError
 
 from db_interface.models.verb import Verb
-from tests.models.model_test_base import ModelTestBase
+from tests.database_test_case import DatabaseTestCase
 
 
-class TestVerb(ModelTestBase):
+class TestVerb(DatabaseTestCase):
 
     def test_create_verb_no_irregular_past(self):
         verb = Verb(value='play', irregular_past='')

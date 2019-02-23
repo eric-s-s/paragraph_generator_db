@@ -1,10 +1,10 @@
 from sqlalchemy.exc import IntegrityError
 
 from db_interface.models.nouns import CountableNoun, UncountableNoun, StaticNoun
-from tests.models.model_test_base import ModelTestBase
+from tests.database_test_case import DatabaseTestCase
 
 
-class TestCountableNoun(ModelTestBase):
+class TestCountableNoun(DatabaseTestCase):
 
     def test_countable_noun_irregular_plural(self):
         noun = CountableNoun(value='child', irregular_plural='children')
@@ -36,7 +36,7 @@ class TestCountableNoun(ModelTestBase):
         self.assertRaises(IntegrityError, self.session.commit)
 
 
-class TestUncountableNoun(ModelTestBase):
+class TestUncountableNoun(DatabaseTestCase):
     def test_uncountable_noun_definite(self):
         noun = UncountableNoun(value='water')
         self.session.add(noun)
@@ -57,7 +57,7 @@ class TestUncountableNoun(ModelTestBase):
         self.assertRaises(IntegrityError, self.session.commit)
 
 
-class TestStaticNoun(ModelTestBase):
+class TestStaticNoun(DatabaseTestCase):
     def test_static_noun_definite(self):
         noun = StaticNoun(value='Joe', is_plural=False)
         self.session.add(noun)
