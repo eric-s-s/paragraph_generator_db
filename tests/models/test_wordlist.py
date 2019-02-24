@@ -3,7 +3,7 @@ from itertools import chain
 from sqlalchemy.exc import IntegrityError
 
 from db_interface.models.nouns import UncountableNoun, CountableNoun, StaticNoun
-from db_interface.models.user import User, UserType
+from db_interface.models.teacher import Teacher
 from db_interface.models.verb import Verb
 from db_interface.models.word import Word, Tag
 from db_interface.models.word_list import WordList
@@ -36,57 +36,57 @@ class TestWordList(DatabaseTestCase):
         self.uncountable_nouns = [self.water, self.air]
         self.static_nouns = [self.joe, self.herbs]
 
-        self.test_user = User(email='email', password='pw', user_type=UserType.TEACHER)
+        self.test_teacher = Teacher(password='pw', email='email')
 
-        self.session.add(self.test_user)
+        self.session.add(self.test_teacher)
         self.session.commit()
         self.session.add_all(chain(self.words, self.verbs, self.countable_nouns, self.uncountable_nouns,
                                    self.static_nouns))
         self.session.commit()
 
     def test_init(self):
-        user_id = 1
+        teacher_id = 1
         name_ = 'x'
         document = {}
-        word_list = WordList(user_id=user_id, name=name_, document_data=document)
-        self.assertEqual(word_list.user_id, user_id)
+        word_list = WordList(teacher_id=teacher_id, name=name_, document_data=document)
+        self.assertEqual(word_list.teacher_id, teacher_id)
         self.assertEqual(word_list.name, name_)
         self.assertEqual(word_list.document_data, document)
 
     def test_commit(self):
-        user_id = self.test_user.id
+        teacher_id = self.test_teacher.teacher_id
         name_ = 'x'
         document = {}
-        self.session.add(WordList(user_id=user_id, name=name_, document_data=document))
+        self.session.add(WordList(teacher_id=teacher_id, name=name_, document_data=document))
         self.session.commit()
         retrieved = self.session.query(WordList).all()[0]
-        self.assertEqual(retrieved.user_id, user_id)
+        self.assertEqual(retrieved.teacher_id, teacher_id)
         self.assertEqual(retrieved.name, name_)
         self.assertEqual(retrieved.document_data, document)
-        self.assertIsInstance(retrieved.id, int)
+        self.assertIsInstance(retrieved.teacher_id, int)
 
     def test_foreign_key_constraint(self):
-        does_not_exist = self.test_user.id + 1
+        does_not_exist = self.test_teacher.teacher_id + 1
         name_ = 'x'
         document = {}
-        self.session.add(WordList(user_id=does_not_exist, name=name_, document_data=document))
+        self.session.add(WordList(teacher_id=does_not_exist, name=name_, document_data=document))
         self.assertRaises(IntegrityError, self.session.commit)
 
     def test_foreign_key_on_delete(self):
-        user_id = self.test_user.id
+        teacher_id = self.test_teacher.teacher_id
         name_ = 'x'
         document = {}
-        self.session.add(WordList(user_id=user_id, name=name_, document_data=document))
+        self.session.add(WordList(teacher_id=teacher_id, name=name_, document_data=document))
         self.session.commit()
 
-        self.session.delete(self.test_user)
+        self.session.delete(self.test_teacher)
 
         retrieved = self.session.query(WordList).all()
         self.assertEqual(retrieved, [])
 
-    def test_unique_constraint_on_user_id_and_name(self):
-        other_user = User('other_user', 'pw', UserType.TEACHER)
-        self.session.add(other_user)
+    def test_unique_constraint_on_teacher_id_and_name(self):
+        other_teacher = Teacher('pw', 'other_teacher')
+        self.session.add(other_teacher)
         self.session.commit()
 
         document = {}
@@ -94,24 +94,24 @@ class TestWordList(DatabaseTestCase):
         name_ = 'a'
         other_name = 'b'
 
-        word_list = WordList(name=name_, user_id=self.test_user.id, document_data=document)
-        different_by_name = WordList(name=other_name, user_id=self.test_user.id, document_data=document)
-        different_by_user = WordList(name=name_, user_id=other_user.id, document_data=document)
+        word_list = WordList(name=name_, teacher_id=self.test_teacher.teacher_id, document_data=document)
+        different_by_name = WordList(name=other_name, teacher_id=self.test_teacher.teacher_id, document_data=document)
+        different_by_user = WordList(name=name_, teacher_id=other_teacher.teacher_id, document_data=document)
         self.session.add_all((word_list, different_by_name, different_by_user))
         self.assertIsNone(self.session.commit())
 
     def test_unique_constraint_raises_integrity_error(self):
         name_ = 'a'
-        word_list = WordList(name=name_, user_id=self.test_user.id, document_data={})
-        other_word_list = WordList(name=name_, user_id=self.test_user.id, document_data={'a': 1})
+        word_list = WordList(name=name_, teacher_id=self.test_teacher.teacher_id, document_data={})
+        other_word_list = WordList(name=name_, teacher_id=self.test_teacher.teacher_id, document_data={'a': 1})
         self.session.add_all((word_list, other_word_list))
         self.assertRaises(IntegrityError, self.session.commit)
 
     def test_test_document_can_contain_int_str_list_dict_None(self):
-        user_id = self.test_user.id
+        teacher_id = self.test_teacher.teacher_id
         name_ = 'x'
         document = {'a': None, 'b': 1, 'c': 'a string', 'd': [], 'e': {}}
-        self.session.add(WordList(user_id=user_id, name=name_, document_data=document))
+        self.session.add(WordList(teacher_id=teacher_id, name=name_, document_data=document))
         self.session.commit()
 
         retrieved = self.session.query(WordList).all()[0]
@@ -128,24 +128,25 @@ class TestWordList(DatabaseTestCase):
         }
         word_list_name = 'list_name'
 
-        self.session.add(self.test_user)
+        self.session.add(self.test_teacher)
         self.session.commit()
 
-        word_list = WordList(user_id=self.test_user.id, name=word_list_name, document_data=word_list_document_data)
+        word_list = WordList(teacher_id=self.test_teacher.teacher_id, name=word_list_name,
+                             document_data=word_list_document_data)
 
         self.session.add(word_list)
         self.session.commit()
 
-        filter_ = WordList.user_id == self.test_user.id and WordList.name == word_list_name
+        filter_ = WordList.teacher_id == self.test_teacher.teacher_id and WordList.name == word_list_name
         retrieved = self.session.query(WordList).filter(filter_)[0]  # type: WordList
 
         self.assertEqual(retrieved.document_data, word_list_document_data)
-        self.assertEqual(retrieved.user_id, self.test_user.id)
+        self.assertEqual(retrieved.teacher_id, self.test_teacher.teacher_id)
         self.assertEqual(retrieved.name, word_list_name)
-        self.assertIsInstance(retrieved.id, int)
+        self.assertIsInstance(retrieved.teacher_id, int)
 
     def test_all_fields_not_nullable(self):
         class_ = WordList
-        keys = ('user_id', 'name', 'document_data')
-        values = (self.test_user.id, 'joe', {'a': 'b'})
+        keys = ('teacher_id', 'name', 'document_data')
+        values = (self.test_teacher.teacher_id, 'joe', {'a': 'b'})
         self.assert_not_nullable(class_, keys, values)
