@@ -20,7 +20,7 @@ class TestWord(DatabaseTestCase):
         self.session.add(word)
         self.session.commit()
 
-        new_word = self.session.query(Word).all()[0]
+        new_word = self.session.query(Word).first()
 
         self.assertEqual(new_word.value, 'with')
         self.assertEqual(new_word.tag, Tag.PREPOSITION)
@@ -60,4 +60,3 @@ class TestWord(DatabaseTestCase):
         keys = ('value', 'tag')
         values = ('x', Tag.PARTICLE)
         self.assert_not_nullable(class_, keys, values)
-

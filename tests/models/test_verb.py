@@ -19,7 +19,7 @@ class TestVerb(DatabaseTestCase):
         verb = Verb(value='play')
         self.session.add(verb)
         self.session.commit()
-        answer = self.session.query(Verb).all()[0]
+        answer = self.session.query(Verb).first()
         self.assertEqual(verb, answer)
         self.assertIsInstance(verb.id, int)
         self.assertEqual(verb.irregular_past, '')
@@ -33,7 +33,7 @@ class TestVerb(DatabaseTestCase):
         verb = Verb(value='go', irregular_past='went')
         self.session.add(verb)
         self.session.commit()
-        answer = self.session.query(Verb).all()[0]
+        answer = self.session.query(Verb).first()
         self.assertEqual(answer, verb)
         self.assertIsInstance(verb.id, int)
 

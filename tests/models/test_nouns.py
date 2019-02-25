@@ -10,7 +10,7 @@ class TestCountableNoun(DatabaseTestCase):
         noun = CountableNoun(value='child', irregular_plural='children')
         self.session.add(noun)
         self.session.commit()
-        to_test = self.session.query(CountableNoun).all()[0]
+        to_test = self.session.query(CountableNoun).first()
         self.assertEqual(to_test.value, 'child')
         self.assertEqual(to_test.irregular_plural, 'children')
         self.assertIsInstance(to_test.id, int)
@@ -20,7 +20,7 @@ class TestCountableNoun(DatabaseTestCase):
         self.assertEqual(noun.irregular_plural, '')
         self.session.add(noun)
         self.session.commit()
-        to_test = self.session.query(CountableNoun).all()[0]
+        to_test = self.session.query(CountableNoun).first()
         self.assertEqual(noun, to_test)
 
     def test_countable_noun_not_nullable_value_and_irregular_plural(self):
@@ -41,7 +41,7 @@ class TestUncountableNoun(DatabaseTestCase):
         noun = UncountableNoun(value='water')
         self.session.add(noun)
         self.session.commit()
-        to_test = self.session.query(UncountableNoun).all()[0]
+        to_test = self.session.query(UncountableNoun).first()
         self.assertEqual(to_test.value, 'water')
         self.assertIsInstance(to_test.id, int)
 
@@ -62,7 +62,7 @@ class TestStaticNoun(DatabaseTestCase):
         noun = StaticNoun(value='Joe', is_plural=False)
         self.session.add(noun)
         self.session.commit()
-        to_test = self.session.query(StaticNoun).all()[0]
+        to_test = self.session.query(StaticNoun).first()
         self.assertEqual(to_test.value, 'Joe')
         self.assertFalse(to_test.is_plural)
         self.assertIsInstance(to_test.id, int)

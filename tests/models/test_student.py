@@ -26,7 +26,7 @@ class TestStudent(DatabaseTestCase):
         student = Student(password='pw', email='email', score=0)
         self.session.add(student)
         self.session.commit()
-        answer = self.session.query(Student).all()[0]
+        answer = self.session.query(Student).first()
         self.assertEqual(answer, student)
         self.assertIsInstance(answer.student_id, int)
 
@@ -34,7 +34,7 @@ class TestStudent(DatabaseTestCase):
         student = Student(password='pw', email='email')
         self.session.add(student)
         self.session.commit()
-        answer = self.session.query(Student).all()[0]
+        answer = self.session.query(Student).first()
         self.assertEqual(answer, student)
         self.assertEqual(answer.score, 0)
 
@@ -42,7 +42,7 @@ class TestStudent(DatabaseTestCase):
         student = Student(password='pw', score=1)
         self.session.add(student)
         self.session.commit()
-        answer = self.session.query(Student).all()[0]
+        answer = self.session.query(Student).first()
         self.assertEqual(answer, student)
         self.assertIsNone(answer.email)
 
