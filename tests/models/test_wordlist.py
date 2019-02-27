@@ -125,11 +125,15 @@ class TestWordList(DatabaseTestCase):
 
     # TODO delete this test. it is just for demo
     def test_init_and_commit_this_is_a_bad_test_it_tests_many_things(self):
+        uncountable_nouns = [{
+            'noun': noun.id, 'definite': bool(index % 2)
+        } for index, noun in enumerate(self.uncountable_nouns)]
+
         word_list_document_data = {
             'verbs': [{'verb': self.go.id, 'particle': self.away.id, 'preposition': None, 'objects': 0},
                       {'verb': self.play.id, 'particle': None, 'preposition': self.away.id, 'objects': 1}],
             'countable_nouns': [noun.id for noun in self.countable_nouns],
-            'uncountable_nouns': [noun.id for noun in self.uncountable_nouns],
+            'uncountable_nouns': uncountable_nouns,
             'static_nouns': [noun.id for noun in self.static_nouns]
         }
         word_list_name = 'list_name'

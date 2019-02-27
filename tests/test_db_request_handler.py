@@ -1,6 +1,9 @@
 from db_interface.db_request_handler import DBRequestHandler, BadIdError, NotFoundError
+from db_interface.models.nouns import CountableNoun, UncountableNoun, StaticNoun
 from db_interface.models.student import Student
 from db_interface.models.teacher import Teacher
+from db_interface.models.verb import Verb
+from db_interface.models.word import Word, Tag
 from tests.database_test_case import DatabaseTestCase
 
 
@@ -171,7 +174,7 @@ class MyTestCase(DatabaseTestCase):
             'score': new_score
         }
 
-        response = self.request_handler.update_score(student_id,new_score)
+        response = self.request_handler.update_score(student_id, new_score)
         self.assertEqual(expected, response)
 
     def test_update_score_updates_database(self):
@@ -183,7 +186,7 @@ class MyTestCase(DatabaseTestCase):
             'email': None,
             'score': new_score
         }
-        self.request_handler.update_score(student_id,new_score)
+        self.request_handler.update_score(student_id, new_score)
 
         is_updated = self.request_handler.get_student(student_id)
         self.assertEqual(expected, is_updated)
@@ -191,16 +194,134 @@ class MyTestCase(DatabaseTestCase):
     def test_update_score_raises_BadIdError(self):
         self.assertRaises(BadIdError, self.request_handler.update_score, 1, 10)
 
-    def test_get_all_prepositions_and_particles(self):
-        pass
+    def test_create_preposition_response(self):
+        preposition = 'away'
+        response = self.request_handler.create_preposition(preposition)
+        expected = {
+            'value': preposition,
+            'tag': 'PREPOSITION',
+            'id': response['id']
+        }
+        self.assertEqual(response, expected)
 
-    def test_get_all_countable_nouns(self):
-        pass
+    def test_create_preposition_in_database(self):
+        preposition = 'away'
+        response = self.request_handler.create_preposition(preposition)
+        from_database = self.session.query(Word).first()
+        self.assertEqual(response, from_database.get_json())
 
-    def test_get_all_uncountable_nouns(self):
-        pass
+    def test_create_particle_response(self):
+        particle = 'up'
+        response = self.request_handler.create_particle(particle)
+        expected = {
+            'value': particle,
+            'tag': 'PARTICLE',
+            'id': response['id']
+        }
+        self.assertEqual(response, expected)
+
+    def test_create_particle_in_database(self):
+        particle = 'up'
+        response = self.request_handler.create_particle(particle)
+        from_database = self.session.query(Word).first()
+        self.assertEqual(response, from_database.get_json())
+
+    def test_create_verb_response(self):
+        verb = 'go'
+        irregular_past = 'went'
+        response = self.request_handler.create_verb(verb, irregular_past)
+        expected = {
+            'value': verb,
+            'irregular_past': irregular_past,
+            'id': response['id']
+        }
+        self.assertEqual(response, expected)
+
+    def test_create_verb_default_irregular_past(self):
+        verb = 'play'
+        response = self.request_handler.create_verb(verb)
+        expected = {
+            'value': verb,
+            'irregular_past': '',
+            'id': response['id']
+        }
+        self.assertEqual(expected, response)
+
+    def test_create_verb_in_database(self):
+        verb = 'child'
+        irregular_past = 'children'
+        response = self.request_handler.create_verb(verb, irregular_past)
+        from_database = self.session.query(Verb).first()
+        self.assertEqual(response, from_database.get_json())
+
+    def test_create_countable_noun_response(self):
+        noun = 'child'
+        irregular_plural = 'children'
+        response = self.request_handler.create_countable_noun(noun, irregular_plural)
+        expected = {
+            'value': noun,
+            'irregular_plural': irregular_plural,
+            'id': response['id']
+        }
+        self.assertEqual(response, expected)
+
+    def test_create_countable_noun_default_irregular_plural(self):
+        noun = 'dog'
+        response = self.request_handler.create_countable_noun(noun)
+        expected = {
+            'value': 'dog',
+            'irregular_plural': '',
+            'id': response['id']
+        }
+        self.assertEqual(expected, response)
+
+    def test_create_countable_noun_in_database(self):
+        countable_noun = 'child'
+        irregular_plural = 'children'
+        response = self.request_handler.create_countable_noun(countable_noun, irregular_plural)
+        from_database = self.session.query(CountableNoun).first()
+        self.assertEqual(response, from_database.get_json())
+
+    def test_create_uncountable_noun_response(self):
+        noun = 'water'
+        response = self.request_handler.create_uncountable_noun(noun)
+        expected = {
+            'value': noun,
+            'id': response['id']
+        }
+        self.assertEqual(response, expected)
+
+    def test_create_uncountable_noun_in_database(self):
+        uncountable_noun = 'air'
+        response = self.request_handler.create_uncountable_noun(uncountable_noun)
+        from_database = self.session.query(UncountableNoun).first()
+        self.assertEqual(response, from_database.get_json())
+
+    def test_create_static_noun_response(self):
+        noun = 'Joe'
+        is_plural = False
+        response = self.request_handler.create_static_noun(noun, is_plural)
+        expected = {
+            'value': noun,
+            'id': response['id'],
+            'is_plural': is_plural
+        }
+        self.assertEqual(expected, response)
+
+    def test_create_static_noun_in_database(self):
+        noun = 'Joe'
+        is_plural = True
+        response = self.request_handler.create_static_noun(noun, is_plural)
+        from_database = self.session.query(StaticNoun).first()
+        self.assertEqual(response, from_database.get_json())
+
 
     def test_get_all_static_nouns(self):
+        pass
+
+    def test_get_all_unstatic_nouns(self):
+        pass
+
         pass
 
     def test_get_all_verbs(self):
@@ -209,34 +330,14 @@ class MyTestCase(DatabaseTestCase):
     def test_get_preposition_or_particle(self):
         pass
 
-    def test_get_countable_noun(self):
-        pass
-
-    def test_get_uncountable_noun(self):
-        pass
-
     def test_get_static_noun(self):
         pass
 
+    def test_get_unstatic_noun(self):
+        pass
+
+
     def test_get_verb(self):
-        pass
-
-    def test_create_preposition(self):
-        pass
-
-    def test_create_particle(self):
-        pass
-
-    def test_create_countable_noun(self):
-        pass
-
-    def test_create_uncountable_noun(self):
-        pass
-
-    def test_create_static_noun(self):
-        pass
-
-    def test_create_verb(self):
         pass
 
     def test_create_word_list(self):
@@ -256,3 +357,20 @@ class MyTestCase(DatabaseTestCase):
 
     def test_get_current_word_list_selection_for_teacher(self):
         pass
+
+    def test_get_all_prepositions_and_particles_no_entries(self):
+        self.assertEqual(self.request_handler.get_all_prepositions_and_particles(), [])
+
+    def test_get_prepositions_and_particles_with_entries(self):
+        with_ = Word(value='with', tag=Tag.PREPOSITION)
+        over = Word(value='over', tag=Tag.PREPOSITION)
+        away = Word(value='away', tag=Tag.PARTICLE)
+        self.session.add_all([with_, over, away])
+        self.session.commit()
+        expected = [word.get_json() for word in (with_, over, away)]
+        expected.sort(key=lambda word: word['id'])
+
+        actual = self.request_handler.get_all_prepositions_and_particles()
+        actual.sort(key=lambda word: word['id'])
+
+        self.assertEqual(expected, actual)

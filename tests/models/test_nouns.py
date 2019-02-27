@@ -35,6 +35,17 @@ class TestCountableNoun(DatabaseTestCase):
         self.session.add_all((noun, same_value))
         self.assertRaises(IntegrityError, self.session.commit)
 
+    def test_countable_noun_get_json(self):
+        noun = CountableNoun(value='x', irregular_plural='y')
+        self.session.add(noun)
+        self.session.commit()
+        expected = {
+            'value': 'x',
+            'irregular_plural': 'y',
+            'id': noun.id
+        }
+        self.assertEqual(expected, noun.get_json())
+
 
 class TestUncountableNoun(DatabaseTestCase):
     def test_uncountable_noun_definite(self):
@@ -55,6 +66,17 @@ class TestUncountableNoun(DatabaseTestCase):
         same_value = UncountableNoun(value='x')
         self.session.add_all((noun, same_value))
         self.assertRaises(IntegrityError, self.session.commit)
+
+    def test_uncountable_noun_get_json(self):
+        value = 'x'
+        noun = UncountableNoun(value=value)
+        self.session.add(noun)
+        self.session.commit()
+        expected = {
+            'value': value,
+            'id': noun.id
+        }
+        self.assertEqual(expected, noun.get_json())
 
 
 class TestStaticNoun(DatabaseTestCase):
@@ -83,3 +105,16 @@ class TestStaticNoun(DatabaseTestCase):
         same_value = StaticNoun(value='x', is_plural=False)
         self.session.add_all((noun, same_value))
         self.assertRaises(IntegrityError, self.session.commit)
+
+    def test_static_noun_get_json(self):
+        value = 'x'
+        is_plural = True
+        noun = StaticNoun(value=value, is_plural=is_plural)
+        self.session.add(noun)
+        self.session.commit()
+        expected = {
+            'value': value,
+            'is_plural': is_plural,
+            'id': noun.id
+        }
+        self.assertEqual(expected, noun.get_json())

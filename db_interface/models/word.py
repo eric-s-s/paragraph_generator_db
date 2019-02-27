@@ -16,3 +16,10 @@ class Word(Base):
     value = Column(String(30), nullable=False)
     tag = Column(Enum(Tag), nullable=False)
     UniqueConstraint(value, tag)
+
+    def get_json(self):
+        return {
+            'id': self.id,
+            'value': self.value,
+            'tag': self.tag.name
+        }

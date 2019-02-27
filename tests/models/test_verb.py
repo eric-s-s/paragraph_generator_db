@@ -63,3 +63,16 @@ class TestVerb(DatabaseTestCase):
         keys = ('value', 'irregular_past')
         values = ('a', 'b')
         self.assert_not_nullable(class_, keys, values)
+
+    def test_get_json(self):
+        value = 'x'
+        irregular_past = 'y'
+        verb = Verb(value=value, irregular_past=irregular_past)
+        self.session.add(verb)
+        self.session.commit()
+        expected = {
+            'value': value,
+            'irregular_past': irregular_past,
+            'id': verb.id
+        }
+        self.assertEqual(expected, verb.get_json())

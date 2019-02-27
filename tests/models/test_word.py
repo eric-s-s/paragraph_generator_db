@@ -60,3 +60,25 @@ class TestWord(DatabaseTestCase):
         keys = ('value', 'tag')
         values = ('x', Tag.PARTICLE)
         self.assert_not_nullable(class_, keys, values)
+
+    def test_get_json_particle(self):
+        word = Word(value='x', tag=Tag.PARTICLE)
+        self.session.add(word)
+        self.session.commit()
+        expected = {
+            'value': 'x',
+            'tag': 'PARTICLE',
+            'id': word.id
+        }
+        self.assertEqual(word.get_json(), expected)
+
+    def test_get_json_preposition(self):
+        word = Word(value='x', tag=Tag.PREPOSITION)
+        self.session.add(word)
+        self.session.commit()
+        expected = {
+            'value': 'x',
+            'tag': 'PREPOSITION',
+            'id': word.id
+        }
+        self.assertEqual(word.get_json(), expected)

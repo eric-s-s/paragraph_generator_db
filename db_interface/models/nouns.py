@@ -14,12 +14,25 @@ class CountableNoun(Base):
         self.value = value
         self.irregular_plural = irregular_plural
 
+    def get_json(self):
+        return {
+            'id': self.id,
+            'value': self.value,
+            'irregular_plural': self.irregular_plural
+        }
+
 
 class UncountableNoun(Base):
     __tablename__ = 'uncountable_noun'
     id = Column(Integer, primary_key=True)
 
     value = Column(String(30), nullable=False, unique=True)
+
+    def get_json(self):
+        return {
+            'value': self.value,
+            'id': self.id
+        }
 
 
 class StaticNoun(Base):
@@ -28,3 +41,10 @@ class StaticNoun(Base):
 
     value = Column(String(30), nullable=False, unique=True)
     is_plural = Column(Boolean, nullable=False)
+
+    def get_json(self):
+        return {
+            'id': self.id,
+            'value': self.value,
+            'is_plural': self.is_plural
+        }

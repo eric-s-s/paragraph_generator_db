@@ -15,3 +15,10 @@ class Verb(Base):
     def __init__(self, value, irregular_past=''):
         self.value = value
         self.irregular_past = irregular_past
+
+    def get_json(self):
+        return {
+            'id': self.id,
+            'value': self.value,
+            'irregular_past': self.irregular_past
+        }
